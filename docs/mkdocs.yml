@@ -1,0 +1,46 @@
+site_name: Fortinet AWS-FGCP-AP-TGW LAB
+repo_url: https://github.com/ukilab-cloud/lab-tgw-fgcp/
+theme:
+  name: material
+  features:
+    - content.code.copy
+    - content.code.select
+    - search.highlight  
+  palette: 
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      accent: deep purple
+      primary: black
+      toggle:
+        icon: material/brightness-7 
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      accent: deep purple
+      primary: black
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+nav:
+  - 'index.md'
+  - 'environment.md'
+  - 'deployment.md'
+  - 'exercise-1.md'
+  - 'exercise-2.md'
+  - 'exercise-3.md'
+  - 'exercise-4.md'
+  - 'exercise-5.md'
+plugins:
+  - glightbox:
+      effect: zoom
+      height: auto
+      width: 100%
+      zoomable: true
+  - search
