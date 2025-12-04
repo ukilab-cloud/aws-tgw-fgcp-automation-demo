@@ -6,6 +6,9 @@ Primarily for use in lab environments. Use at your own risk.
 # Purpose
 
 An environment to demonstrate a Terraform Bootstrap of FortiGate A/P FGCP in AWS + Dynamic Objects and External Feeds
+![FGCP-FortiGate-Automation](.images/FortiGate-Automation.png?raw=true "FGCP-FortiGate-Automation")
+
+
 
 ## Requirements
 - [Terraform](https://learn.hashicorp.com/terraform/getting-started/install.html) >= 1.6.0
