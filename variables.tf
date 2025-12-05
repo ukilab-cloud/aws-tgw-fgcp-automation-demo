@@ -126,7 +126,7 @@ variable "scenario" {
 
 // password for FortiGate HA configuration
 variable "password" {
-  default = "fortinet"
+  default = "Fortinet123!"
 }
 
 # References to your Networks
