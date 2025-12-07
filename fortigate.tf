@@ -132,7 +132,9 @@ data "aws_iam_policy_document" "fortigate_policy_document" {
       "ec2:AssociateAddress",
       "ec2:AssignPrivateIpAddresses",
       "ec2:UnassignPrivateIpAddresses",
-      "ec2:ReplaceRoute"
+      "ec2:ReplaceRoute",
+      "s3:Get*",
+      "s3:List*"
     ]
     resources = ["*"]
   }
@@ -299,6 +301,9 @@ locals {
       mgmt_gw           = cidrhost(var.fortinet_vpc_mgmt_a_subnet_cidr, 1)
       fgt_priority      = "255"
       fgt-remote-hasync = element(tolist(aws_network_interface.fgtb-hasync-b-eni.private_ips), 0)
+      external_connector_path = var.external_connector_path
+      ubuntu_a_ip = "${aws_instance.instance-spoke-a.private_ip}"
+      ubuntu_b_ip = "${aws_instance.instance-spoke-b.private_ip}"
     }
   )
   userdata_fgtb = templatefile(
@@ -321,6 +326,27 @@ locals {
       mgmt_gw           = cidrhost(var.fortinet_vpc_mgmt_b_subnet_cidr, 1)
       fgt_priority      = "100"
       fgt-remote-hasync = element(tolist(aws_network_interface.fgta-hasync-a-eni.private_ips), 0)
+      external_connector_path = var.external_connector_path
+      ubuntu_a_ip = "${aws_instance.instance-spoke-a.private_ip}"
+      ubuntu_b_ip = "${aws_instance.instance-spoke-b.private_ip}"
+    }
+  )
+  s3_userdata_fgta = templatefile(
+    "${path.module}/fgt-s3-userdata.tftpl",
+    {
+      bucket = "${aws_s3_bucket.fg-userdata-bucket.id}"
+      region = "${var.region}"
+      config = "fgta-userdata.txt"
+      license = "fgtb-license.lic"
+    }
+  )
+  s3_userdata_fgtb = templatefile(
+    "${path.module}/fgt-s3-userdata.tftpl",
+    {
+      bucket = "${aws_s3_bucket.fg-userdata-bucket.id}"
+      region = "${var.region}"
+      config = "fgtb-userdata.txt"
+      license = "fgtb-license.lic"
     }
   )
 }
@@ -333,7 +359,8 @@ resource "aws_instance" "fgta" {
   availability_zone    = var.availability_zone1
   key_name             = var.keypair
   iam_instance_profile = aws_iam_instance_profile.fortigate_profile.name
-  user_data            = local.userdata_fgta
+#  user_data            = local.userdata_fgta
+  user_data            = local.s3_userdata_fgta
   primary_network_interface {
     network_interface_id = aws_network_interface.fgta-public-a-eni.id
   }
@@ -373,7 +400,8 @@ resource "aws_instance" "fgtb" {
   availability_zone    = var.availability_zone2
   key_name             = var.keypair
   iam_instance_profile = aws_iam_instance_profile.fortigate_profile.name
-  user_data            = local.userdata_fgtb
+#  user_data            = local.userdata_fgtb
+  user_data            = local.s3_userdata_fgtb
   primary_network_interface {
     network_interface_id = aws_network_interface.fgtb-public-b-eni.id
   }
@@ -403,4 +431,29 @@ resource "aws_network_interface_attachment" "fgtb-mgmt-b-eni-att" {
   instance_id          = aws_instance.fgtb.id
   network_interface_id = aws_network_interface.fgtb-mgmt-b-eni.id
   device_index         = 3
+}
+
+resource "local_sensitive_file" "localfile_fgta" {
+  content = local.userdata_fgta
+  filename = "${path.module}/fgta-config.txt"
+}
+
+resource "local_sensitive_file" "localfile_fgtb" {
+  content = local.userdata_fgtb
+  filename = "${path.module}/fgtb-config.txt"
+}
+
+resource "aws_s3_bucket" "fg-userdata-bucket" {
+}
+
+resource "aws_s3_object" "fgta-userdata" {
+  bucket = aws_s3_bucket.fg-userdata-bucket.id
+  key = "fgta-userdata.txt"
+  content = local.userdata_fgta
+}
+
+resource "aws_s3_object" "fgtb-userdata" {
+  bucket = aws_s3_bucket.fg-userdata-bucket.id
+  key = "fgtb-userdata.txt"
+  content = local.userdata_fgtb
 }

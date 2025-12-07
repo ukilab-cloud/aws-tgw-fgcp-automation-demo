@@ -128,7 +128,11 @@ variable "scenario" {
 variable "password" {
   default = "Fortinet123!"
 }
+## Server Path to allowed and denied lists in FG Terraform Template File and Policy
 
+variable "external_connector_path" {
+  default = "https://raw.githubusercontent.com/ukilab-cloud/aws-tgw-fgcp-automation-demo/refs/heads/main"
+}
 # References to your Networks
 # fortinet VPC
 variable "fortinet_vpc_cidr" {

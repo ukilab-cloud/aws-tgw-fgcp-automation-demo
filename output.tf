@@ -46,3 +46,14 @@ output "SSH_to_FGT_B" {
   value       = "ssh -i ${local_sensitive_file.sshprivkey.filename} admin@${aws_eip.eip-mgmt2.public_ip}"
   description = "string to SSH to FGT_B"
 }
+
+output "SSH_to_Ubuntu_A" {
+  value       = "ssh -i ${local_sensitive_file.sshprivkey.filename} ubuntu@${aws_eip.eip-shared.public_ip} -p 2222"
+  description = "string to SSH to Ubuntu_A"
+}
+
+output "SSH_to_Ubuntu_B" {
+  value       = "ssh -i ${local_sensitive_file.sshprivkey.filename} ubuntu@${aws_eip.eip-shared.public_ip} -p 2223"
+  description = "string to SSH to Ubuntu_B"
+}
+

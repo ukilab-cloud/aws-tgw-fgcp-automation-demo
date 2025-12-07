@@ -9,10 +9,18 @@ Content-Disposition: attachment; filename="config"
 
 config system global
 set hostname ${fgt_id}
+set admintimeout 480
+set gui-auto-upgrade-setup-warning disable
+set gui-firmware-upgrade-warning disable
+set gui-forticare-registration-setup-warning disable
 end
 config system dns
 set primary 169.254.169.253
 set protocol cleartext dot
+end
+config system sdn-connector
+    edit "aws"
+    next
 end
 config system interface
 edit port1                            
@@ -86,6 +94,564 @@ edit 2
 set device port2
 set dstaddr "RFC1918 Addresses"
 set gateway ${private_gw}
+end
+config system external-resource
+    edit "allowed_ips"
+        set type address
+        set resource "${external_connector_path}/fg_allowed_ips.txt"
+    next
+    edit "denied_ips"
+        set type address
+        set resource "${external_connector_path}/fg_denied_ips.txt"
+    next
+    edit "allowed_urls_webfilter"
+        set category 193
+        set resource "${external_connector_path}/fg_allowed_urls.txt"
+    next
+end
+config firewall vip
+    edit "VIP_UbuntuA"
+        set mappedip "${ubuntu_a_ip}"
+        set extintf "port1"
+        set portforward enable
+        set extport 2222
+        set mappedport 22
+    next
+    edit "VIP_UbuntuB"
+        set mappedip "${ubuntu_b_ip}"
+        set extintf "port1"
+        set portforward enable
+        set extport 2223
+        set mappedport 22
+    next
+end
+config firewall address
+edit "AWS_TAG_Internet_Access"
+        set type dynamic
+        set sdn "aws"
+        set associated-interface "port2"
+        set color 9
+        set filter "Tag.internet_access=yes"
+    next
+    edit "AWS_TAG_SpokeA_Access"
+        set type dynamic
+        set sdn "aws"
+        set associated-interface "port2"
+        set color 9
+        set filter "Tag.spoke_a_access=yes"
+    next
+    edit "AWS_TAG_SpokeB_Access"
+        set type dynamic
+        set sdn "aws"
+        set associated-interface "port2"
+        set color 9
+        set filter "Tag.spoke_b_access=yes"
+    next
+end
+config webfilter profile
+    edit "allowed_urls"
+        config ftgd-wf
+            unset options
+            config filters
+                edit 1
+                    set category 1
+                    set action block
+                next
+                edit 2
+                    set category 3
+                    set action block
+                next
+                edit 3
+                    set category 4
+                    set action block
+                next
+                edit 4
+                    set category 5
+                    set action block
+                next
+                edit 5
+                    set category 6
+                    set action block
+                next
+                edit 6
+                    set category 12
+                    set action block
+                next
+                edit 7
+                    set category 59
+                    set action block
+                next
+                edit 8
+                    set category 62
+                    set action block
+                next
+                edit 9
+                    set category 83
+                    set action block
+                next
+                edit 10
+                    set category 96
+                    set action block
+                next
+                edit 11
+                    set category 98
+                    set action block
+                next
+                edit 12
+                    set category 99
+                    set action block
+                next
+                edit 13
+                    set category 2
+                    set action block
+                next
+                edit 14
+                    set category 7
+                    set action block
+                next
+                edit 15
+                    set category 8
+                    set action block
+                next
+                edit 16
+                    set category 9
+                    set action block
+                next
+                edit 17
+                    set category 11
+                    set action block
+                next
+                edit 18
+                    set category 13
+                    set action block
+                next
+                edit 19
+                    set category 14
+                    set action block
+                next
+                edit 20
+                    set category 15
+                    set action block
+                next
+                edit 21
+                    set category 16
+                    set action block
+                next
+                edit 22
+                    set category 57
+                    set action block
+                next
+                edit 23
+                    set category 63
+                    set action block
+                next
+                edit 24
+                    set category 64
+                    set action block
+                next
+                edit 25
+                    set category 65
+                    set action block
+                next
+                edit 26
+                    set category 66
+                    set action block
+                next
+                edit 27
+                    set category 67
+                    set action block
+                next
+                edit 28
+                    set category 19
+                    set action block
+                next
+                edit 29
+                    set category 24
+                    set action block
+                next
+                edit 30
+                    set category 25
+                    set action block
+                next
+                edit 31
+                    set category 72
+                    set action block
+                next
+                edit 32
+                    set category 75
+                    set action block
+                next
+                edit 33
+                    set category 76
+                    set action block
+                next
+                edit 34
+                    set category 26
+                    set action block
+                next
+                edit 35
+                    set category 61
+                    set action block
+                next
+                edit 36
+                    set category 86
+                    set action block
+                next
+                edit 37
+                    set category 88
+                    set action block
+                next
+                edit 38
+                    set category 90
+                    set action block
+                next
+                edit 39
+                    set category 91
+                    set action block
+                next
+                edit 40
+                    set category 17
+                    set action block
+                next
+                edit 41
+                    set category 18
+                    set action block
+                next
+                edit 42
+                    set category 20
+                    set action block
+                next
+                edit 43
+                    set category 23
+                    set action block
+                next
+                edit 44
+                    set category 28
+                    set action block
+                next
+                edit 45
+                    set category 29
+                    set action block
+                next
+                edit 46
+                    set category 30
+                    set action block
+                next
+                edit 47
+                    set category 33
+                    set action block
+                next
+                edit 48
+                    set category 34
+                    set action block
+                next
+                edit 49
+                    set category 35
+                    set action block
+                next
+                edit 50
+                    set category 36
+                    set action block
+                next
+                edit 51
+                    set category 37
+                    set action block
+                next
+                edit 52
+                    set category 38
+                    set action block
+                next
+                edit 53
+                    set category 39
+                    set action block
+                next
+                edit 54
+                    set category 40
+                    set action block
+                next
+                edit 55
+                    set category 42
+                    set action block
+                next
+                edit 56
+                    set category 44
+                    set action block
+                next
+                edit 57
+                    set category 46
+                    set action block
+                next
+                edit 58
+                    set category 47
+                    set action block
+                next
+                edit 59
+                    set category 48
+                    set action block
+                next
+                edit 60
+                    set category 54
+                    set action block
+                next
+                edit 61
+                    set category 55
+                    set action block
+                next
+                edit 62
+                    set category 58
+                    set action block
+                next
+                edit 63
+                    set category 68
+                    set action block
+                next
+                edit 64
+                    set category 69
+                    set action block
+                next
+                edit 65
+                    set category 70
+                    set action block
+                next
+                edit 66
+                    set category 71
+                    set action block
+                next
+                edit 67
+                    set category 77
+                    set action block
+                next
+                edit 68
+                    set category 78
+                    set action block
+                next
+                edit 69
+                    set category 79
+                    set action block
+                next
+                edit 70
+                    set category 80
+                    set action block
+                next
+                edit 71
+                    set category 82
+                    set action block
+                next
+                edit 72
+                    set category 85
+                    set action block
+                next
+                edit 73
+                    set category 87
+                    set action block
+                next
+                edit 74
+                    set category 89
+                    set action block
+                next
+                edit 75
+                    set category 31
+                    set action block
+                next
+                edit 76
+                    set category 41
+                    set action block
+                next
+                edit 77
+                    set category 43
+                    set action block
+                next
+                edit 78
+                    set category 49
+                    set action block
+                next
+                edit 79
+                    set category 50
+                    set action block
+                next
+                edit 80
+                    set category 51
+                    set action block
+                next
+                edit 81
+                    set category 52
+                    set action block
+                next
+                edit 82
+                    set category 53
+                    set action block
+                next
+                edit 83
+                    set category 56
+                    set action block
+                next
+                edit 84
+                    set category 81
+                    set action block
+                next
+                edit 85
+                    set category 84
+                    set action block
+                next
+                edit 86
+                    set category 92
+                    set action block
+                next
+                edit 87
+                    set category 93
+                    set action block
+                next
+                edit 88
+                    set category 94
+                    set action block
+                next
+                edit 89
+                    set category 95
+                    set action block
+                next
+                edit 90
+                    set category 97
+                    set action block
+                next
+                edit 91
+                    set category 100
+                    set action block
+                next
+                edit 92
+                    set category 101
+                    set action block
+                next
+                edit 93
+                    set action block
+                next
+                edit 94
+                    set category 140
+                    set action block
+                next
+                edit 95
+                    set category 141
+                    set action block
+                next
+                edit 96
+                    set category 193
+                next
+            end
+        end
+    next
+end
+config firewall policy
+    edit 5
+        set name "Global_Denied_IPs"
+        set srcintf "port2"
+        set dstintf "port1"
+        set srcaddr "all"
+        set dstaddr "denied_ips"
+        set schedule "always"
+        set service "ALL"
+        set logtraffic disable
+    next
+    edit 1
+        set name "AWS_TAG_InternetAccess"
+        set srcintf "port2"
+        set dstintf "port1"
+        set action accept
+        set srcaddr "AWS_TAG_Internet_Access"
+        set dstaddr "all"
+        set schedule "always"
+        set service "ALL"
+        set utm-status enable
+        set ssl-ssh-profile "certificate-inspection"
+        set webfilter-profile "default"
+        set ips-sensor "default"
+        set application-list "default"
+        set nat enable
+    next
+    edit 2
+        set name "VIP_UbuntuA_2222"
+        set srcintf "port1"
+        set dstintf "port2"
+        set action accept
+        set srcaddr "all"
+        set dstaddr "VIP_UbuntuA"
+        set schedule "always"
+        set service "SSH"
+        set utm-status enable
+        set ssl-ssh-profile "certificate-inspection"
+        set ips-sensor "default"
+        set application-list "default"
+    next
+    edit 3
+        set name "VIP_UbuntuB_2223"
+        set srcintf "port1"
+        set dstintf "port2"
+        set action accept
+        set srcaddr "all"
+        set dstaddr "VIP_UbuntuB"
+        set schedule "always"
+        set service "SSH"
+        set utm-status enable
+        set ssl-ssh-profile "certificate-inspection"
+        set ips-sensor "default"
+        set application-list "default"
+    next
+    edit 4
+        set name "Global_Allowed_IPs"
+        set srcintf "port2"
+        set dstintf "port1"
+        set action accept
+        set srcaddr "SpokeA" "SpokeB"
+        set dstaddr "allowed_ips"
+        set schedule "always"
+        set service "ALL"
+        set utm-status enable
+        set ssl-ssh-profile "certificate-inspection"
+        set webfilter-profile "default"
+        set ips-sensor "default"
+        set application-list "default"
+        set nat enable
+    next
+    edit 7
+        set name "AWS_TAG_SpokeA_Access"
+        set srcintf "port2"
+        set dstintf "port2"
+        set action accept
+        set srcaddr "AWS_TAG_SpokeA_Access"
+        set dstaddr "SpokeA"
+        set schedule "always"
+        set service "ALL"
+        set utm-status enable
+        set ssl-ssh-profile "certificate-inspection"
+        set ips-sensor "default"
+        set application-list "default"
+    next
+    edit 6
+        set name "AWS_TAG_SpokeB_Access"
+        set srcintf "port2"
+        set dstintf "port2"
+        set action accept
+        set srcaddr "AWS_TAG_SpokeB_Access"
+        set dstaddr "SpokeB"
+        set schedule "always"
+        set service "ALL"
+        set utm-status enable
+        set ssl-ssh-profile "certificate-inspection"
+        set ips-sensor "default"
+        set application-list "default"
+    next
+    edit 8
+        set name "Global_Allowed_URLs"
+        set srcintf "port2"
+        set dstintf "port1"
+        set action accept
+        set srcaddr "all"
+        set dstaddr "all"
+        set schedule "always"
+        set service "HTTP" "HTTPS"
+        set utm-status enable
+        set ssl-ssh-profile "certificate-inspection"
+        set webfilter-profile "allowed_urls"
+        set nat enable
+    next
 end
 config system ha
 set group-name fortinet

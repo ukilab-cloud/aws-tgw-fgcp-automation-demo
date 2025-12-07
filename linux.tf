@@ -122,6 +122,8 @@ resource "aws_instance" "instance-spoke-a" {
     Name     = "${var.tag_name_prefix}-workload-a-spoke-a"
     scenario = var.scenario
     az       = var.availability_zone1
+    internet_access = "yes"
+    spoke_b_access = "yes"
   }
 }
 
@@ -139,5 +141,7 @@ resource "aws_instance" "instance-spoke-b" {
     Name     = "${var.tag_name_prefix}-workload-b-spoke-b"
     scenario = var.scenario
     az       = var.availability_zone2
+    internet_access = "no"
+    spoke_a_access = "no"
   }
 }
