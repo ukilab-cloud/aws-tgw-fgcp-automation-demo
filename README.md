@@ -79,16 +79,35 @@ To destroy the environment, use the command:
 $ terraform destroy
 ```
 
+## Things to see and do
+
+- Connect to either Ubuntu host (Workload in Subnet A or Subnet B) using SSH via the FortiGate (see ```terraform output```)
+- Workload A can access Workload B but not vice-versa 
+  - Policy based on AWS Dynamic Objects
+  - Tag.spoke_a_access=yes or Tag.spoke_b_access=yes allows access while no tag or the tag with value "no" does not allow access
+- Workload A can access Internet but Workload B cannot
+  - Policy based on AWS Dynamic Objects
+  - Tag.internet_access=yes will allow output internet access while no tag or tag value of "no" will block access
+  - Global allowed and deny lists will override this for Workload A and B
+  - Global allowed URLs will override this for Workload A and B
+  - Try ```wget https://bbc.co.uk``` and ```wget https://news.sky.com``` for a comparison
+  - Try ```ping 8.8.8.8``` or ```ping 1.1.1.1``` for global success but ```ping 8.8.4.4``` for global deny
+- To see the bootstrap try ```diag debug cloudinit show`` on the FortiGate to see what the initial userdata config looks like
+- To see what the AWS SDN Connector is doing try ```diag debug application awsd -1``` and ```diag debug enable```
+- This is still a full FGCP cluster so testing cluser failover conditions can still be performed
+  - To see HA in action, on the ***passive*** node run ```diag debug application awsd -1``` and ```diag debug enable```
+  - On the ***active*** node run ```exec ha failover set 1``` to initiate failover then look at the old passive node debug to see what happens
+
 ## TODO/Changelog/Caveats
 
 - Changed to latest 7.6.4 FortiGate AMI as default
 - Basic support for FortiFlex tokens added, however only the Primary node **FGT-A** will get licensed. The secondary node will fail to license due to no EIP and no internet access.
   - Find a resolution/amend
 - If *fos_architecture* is set to **ARM** the terraform data resource that resolved the AMI will fail. 
-  - Rework/Add a filter for the new ARM based AMI naming schem. 
-- Add External Feeds for IP Address, Domain Names
-- Update FortiGate Templates (Cloudinit) to support IP Address and Domain Names  and a Policy to consume them
-- Add Tags to Ubuntu instances for use by Dynamic Objects in Bootstrap config.
+  - Rework/Add a filter for the new ARM based AMI naming scheme.
+- Rework License File and Flex deployments to work with new S3 Bucket based boostrap.
+
+
 
 # Disclaimer
 This is a community project, the of this project are offered "as is". The authors make no representations or warranties of any kind, express or implied, as to the use or operation of content and materials included on this site. To the full extent permissible by applicable law, the authors disclaim all warranties, express or implied, including, but not limited to, implied warranties of merchantability and fitness for a particular purpose. You acknowledge, by your use of the site, that your use of the site is at your sole risk. 
